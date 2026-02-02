@@ -37,40 +37,10 @@
             z-index: 2;
         }
 
-        @keyframes pop {
-            from {
-                transform: scale(0.85);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         h1 {
             font-size: clamp(1.6rem, 4vw, 2.3rem);
             margin-bottom: 1.2rem;
             animation: pulse 1.8s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .sub {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
         }
 
         .buttons {
@@ -97,10 +67,6 @@
             box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5);
         }
 
-        #yes:hover {
-            transform: translateY(-3px) scale(1.05);
-        }
-
         #no {
             background: linear-gradient(45deg, #ffc2d1, #ff8fab);
             color: #7a0024;
@@ -108,40 +74,99 @@
 
         #celebration {
             display: none;
+        }
+
+        .slideshow {
+            position: relative;
+            overflow: hidden;
+            height: 410px;
+            /* increased from 280px */
+            border-radius: 16px;
+            margin-bottom: 1rem;
+        }
+
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 1s ease, transform 1s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
             text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2.5rem 2rem;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-            width: min(92%, 420px);
-            animation: pop 0.8s ease;
+            background: #fff0f6;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .slide img {
+            width: 50%;
+            height: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+
+        /* 💖 Glowing text */
+        .love-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            font-weight: 600;
+            color: #c9184a;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.7);
+            animation: glow 1.5s ease-in-out infinite alternate;
             position: relative;
             z-index: 2;
         }
 
-        #celebration img {
-            width: 180px;
-            max-width: 100%;
-            border-radius: 16px;
-            margin-bottom: 1rem;
-            animation: float 2s ease-in-out infinite;
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 6px rgba(255, 77, 109, 0.4);
+            }
+
+            to {
+                text-shadow: 0 0 16px rgba(255, 77, 109, 1);
+            }
         }
 
-        @keyframes float {
+        /* 💓 Heart pulse behind text */
+        .heart-bg {
+            position: absolute;
+            font-size: 6rem;
+            opacity: 0.15;
+            animation: heartBeat 1.8s infinite;
+            z-index: 1;
+        }
+
+        @keyframes heartBeat {
 
             0%,
             100% {
-                transform: translateY(0);
+                transform: scale(1);
             }
 
             50% {
-                transform: translateY(-10px);
+                transform: scale(1.15);
             }
         }
 
-        #celebration p {
-            font-size: 1.3rem;
+        .slide p {
+            font-size: 1.2rem;
+            line-height: 1.6;
             font-weight: 600;
+            color: #c9184a;
+            margin: 0;
+            z-index: 2;
         }
 
         .heart {
@@ -186,8 +211,8 @@
 <body>
 
     <div id="main" class="container">
-        <p class="sub">Hey <b>Luchi</b>, I have a small question for you 😌</p>
-        <h1>Will you be my Valentine? 💖</h1> <br>
+        <p>Hey <b>Luchi</b>, I have something to ask you 😌</p>
+        <h1>Will you be my Valentine? 💖</h1>
 
         <div class="buttons">
             <button id="yes">Yes</button>
@@ -195,12 +220,26 @@
         </div>
     </div>
 
-    <div id="celebration">
-        <img src="WhatsApp Image 2026-02-02 at 6.30.15 AM.jpeg" alt="Romantic">
-        <p>Yay 💕 <br> You just made my day, My Angel!</p>
+    <div id="celebration" class="container">
+        <div class="slideshow">
+            <div class="slide active">
+                <img src="WhatsApp Image 2026-02-02 at 6.30.15 AM.jpeg" alt="Romantic">
+                <p>Yay 💕 <br> You just made my day, My Angel!</p>
+            </div>
+
+            <div class="slide">
+                <div class="heart-bg">💖</div>
+                <div class="love-text">
+                    Luchi My love❤️ <br><br>
+                    You are my peace in chaos, my smile on hard days, and the warmth in my cold nights.
+                    Being with you feels like home, and loving you is the easiest thing my heart has ever known.
+                    Thank you for being you. I’m grateful for you today and always. 💕
+                </div>
+                <p>Forever your Valentine 💘</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Sound -->
     <audio id="yesSound" src="HER_-_Best_Part_CeeNaija.com_.mp3" loop></audio>
 
     <script>
@@ -209,25 +248,41 @@
         const main = document.getElementById("main");
         const celebration = document.getElementById("celebration");
         const yesSound = document.getElementById("yesSound");
+        const slides = document.querySelectorAll(".slide");
+
+        let currentSlide = 0;
+        let slideTimer;
 
         yesBtn.onclick = () => {
             main.style.display = "none";
             celebration.style.display = "block";
             yesSound.play();
             launchConfetti();
+            startSlideshow();
         };
+
+        function startSlideshow() {
+            clearTimeout(slideTimer);
+            const durations = [5000, 25000];
+
+            function showNext() {
+                slides[currentSlide].classList.remove("active");
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add("active");
+
+                slideTimer = setTimeout(showNext, durations[currentSlide]);
+            }
+
+            slideTimer = setTimeout(showNext, durations[currentSlide]);
+        }
 
         noBtn.onclick = () => {
             const padding = 20;
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-
-            const x = Math.random() * maxX;
-            const y = Math.random() * maxY;
-
             noBtn.style.position = "fixed";
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
+            noBtn.style.left = Math.random() * maxX + "px";
+            noBtn.style.top = Math.random() * maxY + "px";
         };
 
         noBtn.ondblclick = () => {
@@ -242,12 +297,10 @@
                 confetti.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
                 confetti.style.animationDuration = 2 + Math.random() * 3 + "s";
                 document.body.appendChild(confetti);
-
                 setTimeout(() => confetti.remove(), 4000);
             }
         }
 
-        // Floating hearts
         setInterval(() => {
             const heart = document.createElement("div");
             heart.className = "heart";
@@ -255,7 +308,6 @@
             heart.style.left = Math.random() * 100 + "vw";
             heart.style.animationDuration = 4 + Math.random() * 3 + "s";
             document.body.appendChild(heart);
-
             setTimeout(() => heart.remove(), 7000);
         }, 500);
     </script>
